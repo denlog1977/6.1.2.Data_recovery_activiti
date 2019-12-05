@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private SimpleAdapter listContentAdapter;
     private SwipeRefreshLayout swipeLayout;
     private ListView listView;
-    private ArrayList<Integer> removedListItems;
+    private ArrayList<Integer> removedListItems = new ArrayList<>();;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +37,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mySharedPref = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-
-        removedListItems = new ArrayList<>();
 
         getTextFromSharedPref();
 
@@ -58,9 +55,6 @@ public class MainActivity extends AppCompatActivity {
         listContentAdapter = createAdapter(content);
         listView.setAdapter(listContentAdapter);
 
-
-
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id){
                 content.remove(position);
@@ -73,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         swipeLayout = findViewById(R.id.swiperefresh);
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override public void onRefresh() {
+                removedListItems = new ArrayList<>();
                 getTextFromSharedPref();
                 updateList();
                 listContentAdapter.notifyDataSetChanged();
@@ -121,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        Toast.makeText(this, "onRestoreInstanceState" + "  content.remove", Toast.LENGTH_SHORT).show();
         removedListItems = savedInstanceState.getIntegerArrayList("removedListItems");
         for (int i=0 ; i<removedListItems.size(); i++) {
             content.remove(removedListItems.get(i).intValue());
